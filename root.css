@@ -1,0 +1,12 @@
+.task {
+  width: fit-content;
+  border: 2px solid black;
+  align-content: center;
+  padding: 0 10px 0 10px;
+}
+
+#task-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}

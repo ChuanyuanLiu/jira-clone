@@ -1,5 +1,6 @@
 // code copied from https://nodejs.org/api/synopsis.html
 const http = require("node:http")
+const fs = require("fs")
 
 const hostname = "127.0.0.1"
 const port = 3000
@@ -38,18 +39,50 @@ function isAPIRequest(req) {
 
 function API(req, res) {
   res.statusCode = 200
+  // TODO: allow dyanmic allocation of hostname
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
   res.setHeader("Content-Type", "application/json")
   res.end(JSON.stringify(data))
 }
 
+function html(req, res) {
+  res.statusCode = 200
+  res.setHeader("Content-Type", "text/html")
+  const data = fs.readFileSync("root.html", "utf-8")
+  res.end(data)
+}
+
+function css(req, res) {
+  res.statusCode = 200
+  res.setHeader("Content-Type", "text/css")
+  const data = fs.readFileSync("root.css", "utf-8")
+  res.end(data)
+}
+
+function js(req, res) {
+  res.statusCode = 200
+  res.setHeader("Content-Type", "text/javascript")
+  const data = fs.readFileSync("root.js", "utf-8")
+  res.end(data)
+}
+
 const server = http.createServer((req, res) => {
+  console.log(req.headers.host + req.url)
   if (isAPIRequest(req)) {
     API(req, res)
     return
   }
-  res.statusCode = 501
-  res.setHeader("Content-Type", "text/plain")
-  res.end("Not implemented")
+  if (req.url.endsWith(".css")) {
+    css(req, res)
+    return
+  }
+  if (req.url.endsWith(".js")) {
+    js(req, res)
+    return
+  }
+  html(req, res)
+  return
 })
 
 server.listen(port, hostname, () => {
