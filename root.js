@@ -14,15 +14,35 @@ function renderTask(taskData) {
   `
 }
 
+const createTaskBtn = document.querySelector("#create-task-btn")
+const draftTask = document.querySelector("#draft-task")
+
+createTaskBtn.addEventListener("click", (event) => {
+  const payload = {
+    title: draftTask.querySelector(".title").textContent.trim(),
+    description: draftTask.querySelector(".description").textContent.trim(),
+  }
+  fetch("http://api.localhost:3000/new", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
+    .then(() => renderTasks())
+    .catch(console.error)
+})
+
 const taskList = document.querySelector("#task-list")
 
 // get data from server
-fetch("http://api.localhost:3000")
-  .then((response) => response.json())
-  .then((data) => {
-    taskList.innerHTML = data.map(renderTask).join("")
-  })
-  .catch((err) => {
-    // TODO: return more informative error to user
-    console.log(err)
-  })
+function renderTasks() {
+  fetch("http://api.localhost:3000")
+    .then((response) => response.json())
+    .then((data) => {
+      taskList.innerHTML = data.map(renderTask).join("")
+    })
+    .catch((err) => {
+      // TODO: return more informative error to user
+      console.log(err)
+    })
+}
+
+renderTasks()
